@@ -1,0 +1,20 @@
+<div class="container">
+  <section class="timer-counter-label example-box" cdkDrag [cdkDragFreeDragPosition]="dragPosition">
+        <p *ngIf="counter; else elseBlock">
+          {{counter | number}}s
+        </p>
+
+    <ng-template #elseBlock>
+      <p> Press Start</p>
+    </ng-template>
+  </section>
+
+  <!-- Boutons -->
+  <section class="timer-button-container">
+    <button class="timer-button" (click)="startTimer()">
+      {{ startText }}
+    </button>
+
+    <button class="timer-button" (click)="clearTimer()">Clear</button>
+  </section>
+</div>
