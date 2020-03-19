@@ -1,6 +1,8 @@
 import {Component, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators} from '@angular/forms';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import { Todo } from '../todo';
+import { Done } from '../done';
 
 @Component({
   selector: 'app-todo-list',
@@ -11,47 +13,72 @@ import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag
 export class TodoListComponent  {
   @ViewChild(FormGroupDirective) formDirective: FormGroupDirective;
   toDoForm: FormGroup;
-  // done = [];
+  todo = [];
 
-  todo = [
-    'Get to work',
-    'Pick up groceries',
-    'Go home',
-    'Fall asleep'
-  ];
+  // todo = [
+  //   { id: 1, task: 'Get to work' },
+  //   { id: 2, task: 'Pick up groceries' },
+  //   { id: 3, task: 'Go home' },
+  //   { id: 4, task: 'Fall asleep' }
+  // ];
 
   done = [
-    'Get up',
-    'Brush teeth',
-    'Take a shower',
-    'Check e-mail',
-    'Walk dog'
+    { id: 1, task: 'Get up' },
+    { id: 2, task: 'Brush teeth' },
+    { id: 3, task: 'Take a shower' },
+    { id: 4, task: 'Check e-mail' },
+    { id: 5, task: 'Walk dog' }
   ];
 
   constructor(private formBuilder: FormBuilder) {
     this.toDoForm = this.formBuilder.group({
-      tache: [null, Validators.required]
+      task: [null, Validators.required]
     });
   }
 
-  get tache() {
-    return this.toDoForm.get('tache') as FormControl;
+  get task() {
+    return this.toDoForm.get('task') as FormControl;
   }
 
+  /**
+   * Ajoute une tâche
+   * @param form: formulaire
+   */
   onSubmit(form) {
+    let lastId = 0;
     console.warn('Tache: ', form);
-
 
     if (this.toDoForm.invalid) {
       return;
     }
 
-    this.todo.push(form.tache);
+    if (this.todo.length > 0) {
+      lastId = this.todo[this.todo.length - 1].id;
+    }
+
+    console.log(this.todo);
+
+    const task = {id: lastId + 1, task: form.task};
+    this.addTodoTask(task as Todo);
     this.formDirective.resetForm();
-    console.log(form.tache);
   }
 
-  drop(event: CdkDragDrop<string[]>) {
+  /**
+   * Supprime une tâche
+   * @param id: id de la tâche
+   */
+  deleteTask(id: number) {
+    // todo : supprimer une tâche d'une des 2 listes
+    console.warn('liste avant', this.todo);
+    this.todo = this.todo.filter(t => t.id !== id);
+    console.warn('liste apres', this.todo);
+  }
+
+  /**
+   * Transfère une tâche d'une liste à l'autre
+   * @param event: Event drop
+   */
+  drop(event: CdkDragDrop<Todo[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -62,9 +89,25 @@ export class TodoListComponent  {
     }
   }
 
-  clearDoneList() {
-    this.done = [];
-    return this.done;
+  // clearDoneList() {
+  //   this.done = [];
+  //   return this.done;
+  // }
+
+  /**
+   * Termine une tâche
+   * @param task: tâche
+   */
+  doneTask(task: Todo) {
+    this.addDoneTask(task);
+    this.deleteTask(task.id);
   }
 
+  addTodoTask(item: Todo) {
+    this.todo.push({id: item.id, task: item.task});
+  }
+
+  addDoneTask(item: Todo) {
+    this.done.push({id: item.id, task: item.task});
+  }
 }
