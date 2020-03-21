@@ -3,6 +3,7 @@
   <span>Tâches chronométrées</span>
 </mat-toolbar>
 
+<!-- Ajout d'une tâche -->
 <div class="form-todo">
   <form [formGroup]="toDoForm" (ngSubmit)="onSubmit(toDoForm.value)" class="todo-form">
     <mat-form-field class="task-field">
@@ -15,8 +16,9 @@
   </form>
 </div>
 
+<!-- Liste de tâches à faire -->
 <div class="container">
-  <h2>To do</h2>
+  <h2>To do ({{todo.length}})</h2>
 
   <div
     class="list"
@@ -27,23 +29,37 @@
     (cdkDropListDropped)="drop($event)">
 
     <!--    <mat-nav-list>-->
-    <mat-list-item class="box" *ngFor="let item of todo" cdkDrag>
-      {{ item.task }}
+    <mat-list-item class="box" cdkDrag
+                   *ngFor="let item of todo; let i = index"
+                   [cdkDragDisabled]="hide"
+                   [style.background-color]="colors[i]">
 
-      <button mat-icon-button (click)="doneTask(item)">
-        <mat-icon matListIcon>check</mat-icon>
-      </button>
+      <div class="task-field-edit" *ngIf="!hide; else inputItem" (click)="toggleInput()">
+        {{  item.task }}
 
-      <button mat-icon-button (click)="deleteTask(item.id)">
-        <mat-icon matListIcon>delete_outline</mat-icon>
-      </button>
+        <button mat-icon-button matTooltip="Supprimer la tâche" (click)="deleteTask(item.id)">
+          <mat-icon matListIcon>delete_outline</mat-icon>
+        </button>
+      </div>
+
+      <!-- Modification d'une tâche -->
+      <ng-template #inputItem>
+        <mat-form-field>
+          <input matInput placeholder="Tâche" value="{{item.task}}" [(ngModel)]="item.task">
+        </mat-form-field>
+
+        <button mat-icon-button matTooltip="Valider" (click)="toggleInput()">
+          <mat-icon matListIcon>check</mat-icon>
+        </button>
+      </ng-template>
     </mat-list-item>
     <!--    </mat-nav-list>-->
   </div>
 </div>
 
+<!-- Liste de tâches terminées -->
 <div class="container">
-  <h2>Done</h2>
+  <h2>Done ({{done.length}})</h2>
 
   <div
     class="list"
@@ -52,6 +68,6 @@
     [cdkDropListData]="done"
     [cdkDropListConnectedTo]="[todoList]"
     (cdkDropListDropped)="drop($event)">
-    <div class="box" *ngFor="let item of done" cdkDrag>{{item.task}}</div>
+    <div class="box" *ngFor="let item of done" cdkDrag cdkDragDisabled>{{item.task}}</div>
   </div>
 </div>

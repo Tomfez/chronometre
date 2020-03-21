@@ -7,11 +7,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {MatInputModule} from '@angular/material/input';
 import { TodoListComponent } from './todo-list/todo-list.component';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatListModule} from '@angular/material/list';
 import {MatIconModule} from '@angular/material/icon';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 
 @NgModule({
@@ -30,6 +31,8 @@ import {MatIconModule} from '@angular/material/icon';
     MatToolbarModule,
     MatListModule,
     MatIconModule,
+    MatTooltipModule,
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -3,6 +3,7 @@ import {FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators} fro
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import { Todo } from '../todo';
 import { Done } from '../done';
+import { Color } from '../color.enum';
 
 @Component({
   selector: 'app-todo-list',
@@ -13,14 +14,10 @@ import { Done } from '../done';
 export class TodoListComponent  {
   @ViewChild(FormGroupDirective) formDirective: FormGroupDirective;
   toDoForm: FormGroup;
-  todo = [];
-
-  // todo = [
-  //   { id: 1, task: 'Get to work' },
-  //   { id: 2, task: 'Pick up groceries' },
-  //   { id: 3, task: 'Go home' },
-  //   { id: 4, task: 'Fall asleep' }
-  // ];
+  todo: Todo[];
+  // done: Done[];
+  hide = false;
+  colors = [];
 
   done = [
     { id: 1, task: 'Get up' },
@@ -34,6 +31,17 @@ export class TodoListComponent  {
     this.toDoForm = this.formBuilder.group({
       task: [null, Validators.required]
     });
+
+    for (let i = 0; i < 42; i++) {
+      this.colors.push(this.getRandomColor());
+    }
+
+    this.todo = [];
+    for (let i = 0; i < 42; i++) {
+      this.todo.push(
+        {id: i, task: Object.keys(Color)[i]}
+      );
+    }
   }
 
   get task() {
@@ -56,8 +64,6 @@ export class TodoListComponent  {
       lastId = this.todo[this.todo.length - 1].id;
     }
 
-    console.log(this.todo);
-
     const task = {id: lastId + 1, task: form.task};
     this.addTodoTask(task as Todo);
     this.formDirective.resetForm();
@@ -69,9 +75,9 @@ export class TodoListComponent  {
    */
   deleteTask(id: number) {
     // todo : supprimer une tâche d'une des 2 listes
-    console.warn('liste avant', this.todo);
+    // console.warn('liste avant', this.todo);
     this.todo = this.todo.filter(t => t.id !== id);
-    console.warn('liste apres', this.todo);
+    // console.warn('liste apres', this.todo);
   }
 
   /**
@@ -95,19 +101,39 @@ export class TodoListComponent  {
   // }
 
   /**
-   * Termine une tâche
-   * @param task: tâche
+   * Ajoute une tâche à la liste en cours
+   * @param item: tâche
    */
-  doneTask(task: Todo) {
-    this.addDoneTask(task);
-    this.deleteTask(task.id);
-  }
-
   addTodoTask(item: Todo) {
     this.todo.push({id: item.id, task: item.task});
   }
 
-  addDoneTask(item: Todo) {
-    this.done.push({id: item.id, task: item.task});
+  /**
+   * Génère une couleur aléatoire
+   */
+  getRandomColor() {
+    const item = this.getRandomInt(0, Object.keys(Color).length);
+    const color = Object.keys(Color)[item];
+
+    return Color[color];
+  }
+
+  /**
+   * Retourne un nombre aléatoire
+   * @param min: nombre min
+   * @param max: nombre max
+   */
+  getRandomInt(min, max): number {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+  /**
+   * Permet de switch entre l'affichage et l'édition d'une tâche
+   */
+  toggleInput() {
+    this.hide = !this.hide;
   }
 }
