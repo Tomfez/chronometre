@@ -1,5 +1,5 @@
 {
-  "name": "chronometre",
+  "name": "todotime",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -22,6 +22,8 @@
     "@angular/platform-browser-dynamic": "^9.0.5",
     "@angular/router": "^9.0.5",
     "bootstrap": "^4.4.1",
+    "firebase": "^7.12.0",
+    "firebase-admin": "^8.10.0",
     "jquery": "^3.4.1",
     "popper.js": "^1.16.1",
     "rxjs": "~6.5.4",

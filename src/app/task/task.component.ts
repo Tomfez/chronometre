@@ -1,23 +1,31 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators} from '@angular/forms';
+import * as firebase from 'firebase';
+import {Task} from '../task';
+import {Color} from '../color.enum';
+import {ListService} from '../list.service';
+import {TaskService} from '../task.service';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import { Todo } from '../todo';
-import { Done } from '../done';
-import { Color } from '../color.enum';
 
 @Component({
-  selector: 'app-todo-list',
-  templateUrl: './todo-list.component.html',
-  styleUrls: ['./todo-list.component.css']
+  selector: 'app-task',
+  templateUrl: './task.component.html',
+  styleUrls: ['./task.component.css']
 })
 
-export class TodoListComponent  {
+export class TaskComponent implements OnInit {
+
   @ViewChild(FormGroupDirective) formDirective: FormGroupDirective;
-  toDoForm: FormGroup;
-  todo: Todo[];
+  public toDoForm: FormGroup;
+  private db = firebase.firestore();
+
+  // todo: Task[];
   // done: Done[];
-  hide = false;
-  colors = [];
+  public hide = false;
+  public colors = [];
+  public tasksList = [];
+  private lastId = 0;
+
 
   done = [
     { id: 1, task: 'Get up' },
@@ -27,7 +35,23 @@ export class TodoListComponent  {
     { id: 5, task: 'Walk dog' }
   ];
 
-  constructor(private formBuilder: FormBuilder) {
+  /**
+   * constructor
+   * @param formBuilder: FormBuilder
+   * @param listService: ListService
+   * @param taskService: TaskService
+   */
+  constructor(
+    private formBuilder: FormBuilder,
+    private listService: ListService,
+    private taskService: TaskService
+  ) {
+  }
+
+  /**
+   * ngOnInit
+   */
+  ngOnInit() {
     this.toDoForm = this.formBuilder.group({
       task: [null, Validators.required]
     });
@@ -36,14 +60,23 @@ export class TodoListComponent  {
       this.colors.push(this.getRandomColor());
     }
 
-    this.todo = [];
-    for (let i = 0; i < 42; i++) {
-      this.todo.push(
-        {id: i, task: Object.keys(Color)[i]}
-      );
-    }
+    this.getTasks();
+
+    // this.todo = [];
+    // for (let i = 0; i < 42; i++) {
+    //   this.todo.push(
+    //     {id: i, task: Object.keys(Color)[i], done: false}
+    //   );
+    // }
   }
 
+  private getTasks() {
+    this.tasksList.push(this.taskService.getTasks());
+  }
+
+  /**
+   * get task
+   */
   get task() {
     return this.toDoForm.get('task') as FormControl;
   }
@@ -52,21 +85,15 @@ export class TodoListComponent  {
    * Ajoute une tâche
    * @param form: formulaire
    */
-  onSubmit(form) {
-    let lastId = 0;
+  public onSubmit(form) {
+    // let lastId = 0;
     console.warn('Tache: ', form);
 
     if (this.toDoForm.invalid) {
       return;
     }
 
-    if (this.todo.length > 0) {
-      lastId = this.todo[this.todo.length - 1].id;
-    }
-
-    const task = {id: lastId + 1, task: form.task};
-    this.addTodoTask(task as Todo);
-    this.formDirective.resetForm();
+    this.createTask(form.task);
   }
 
   /**
@@ -76,7 +103,7 @@ export class TodoListComponent  {
   deleteTask(id: number) {
     // todo : supprimer une tâche d'une des 2 listes
     // console.warn('liste avant', this.todo);
-    this.todo = this.todo.filter(t => t.id !== id);
+    //   this.todo = this.todo.filter(t => t.id !== id);
     // console.warn('liste apres', this.todo);
   }
 
@@ -84,7 +111,7 @@ export class TodoListComponent  {
    * Transfère une tâche d'une liste à l'autre
    * @param event: Event drop
    */
-  drop(event: CdkDragDrop<Todo[]>) {
+  drop(event: CdkDragDrop<Task[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -101,17 +128,9 @@ export class TodoListComponent  {
   // }
 
   /**
-   * Ajoute une tâche à la liste en cours
-   * @param item: tâche
-   */
-  addTodoTask(item: Todo) {
-    this.todo.push({id: item.id, task: item.task});
-  }
-
-  /**
    * Génère une couleur aléatoire
    */
-  getRandomColor() {
+  private getRandomColor() {
     const item = this.getRandomInt(0, Object.keys(Color).length);
     const color = Object.keys(Color)[item];
 
@@ -123,7 +142,7 @@ export class TodoListComponent  {
    * @param min: nombre min
    * @param max: nombre max
    */
-  getRandomInt(min, max): number {
+  private getRandomInt(min, max): number {
     min = Math.ceil(min);
     max = Math.floor(max);
 
@@ -133,7 +152,24 @@ export class TodoListComponent  {
   /**
    * Permet de switch entre l'affichage et l'édition d'une tâche
    */
-  toggleInput() {
+  public toggleInput() {
     this.hide = !this.hide;
   }
+
+  /**
+   * Création d'une tâche
+   * @param val: tâche
+   */
+  private createTask(val: string) {
+    const newTask = new Task({
+      id: ++this.lastId,
+      task: val
+    });
+
+    console.log(newTask);
+
+    // Dans un premier temps on récupère la liste correspondante, puis on ajoute une nouvelle tâche
+    this.taskService.createTask(newTask);
+  }
+
 }

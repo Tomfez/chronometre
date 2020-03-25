@@ -1,0 +1,22 @@
+<div class="row">
+  <h2>Listes</h2>
+
+  <!-- Affichage des listes -->
+  <div cdkDropList cdkDropListOrientation="horizontal" class="col-12 lists" (cdkDropListDropped)="drop($event)">
+    <div class="list" *ngFor="let list of lists" routerLink="/list/{{list.name}}">
+      <!--         (click)="loadList(list)">-->
+      {{list.name}}
+    </div>
+  </div>
+</div>
+
+<!-- Ajout d'une liste -->
+<form [formGroup]="listForm" (ngSubmit)="onSubmit(listForm.value)" class="form-inline list-form">
+  <mat-form-field class="list-field">
+    <mat-label>Liste</mat-label>
+    <input matInput id="list" formControlName="list" type="text" placeholder="Nom de la liste" required>
+    <mat-error *ngIf="list.errors?.required">Ce champ est requis</mat-error>
+  </mat-form-field>
+
+  <button mat-stroked-button color="primary" type="submit">Ajouter la liste</button>
+</form>
