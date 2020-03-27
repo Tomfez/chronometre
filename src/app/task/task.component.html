@@ -34,20 +34,22 @@
                      [style.background-color]="colors[i]">
 
         <div class="task-field-edit" *ngIf="!hide && !item.done; else inputItem" (click)="toggleInput()">
-          {{ item.value }}
+          {{ item.name }}
 
-          <button mat-icon-button matTooltip="Supprimer la tâche" (click)="deleteTask(item.id)">
+          <button mat-icon-button matTooltip="Supprimer la tâche" (click)="deleteTask(item.name)">
             <mat-icon matListIcon>delete_outline</mat-icon>
           </button>
         </div>
 
         <!-- Modification d'une tâche -->
         <ng-template #inputItem>
-          <mat-form-field>
-            <input matInput placeholder="Tâche" value="{{item.value}}" [(ngModel)]="item.value">
+          <mat-form-field class="example-full-width">
+            <mat-label>Tâche</mat-label>
+            <input matInput [value]="item.name" [(ngModel)]="item.name" required>
+            <!--              <mat-error *ngIf="task.errors?.required">Ce champ est requis</mat-error>-->
           </mat-form-field>
 
-          <button mat-icon-button matTooltip="Valider" (click)="toggleInput()">
+          <button mat-icon-button matTooltip="Valider" type="submit" (click)="updateTask(item)">
             <mat-icon matListIcon>check</mat-icon>
           </button>
         </ng-template>

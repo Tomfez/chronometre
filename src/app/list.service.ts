@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as firebase from 'firebase';
+import DocumentData = firebase.firestore.DocumentData;
+import {FormGroup} from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -10,17 +12,29 @@ export class ListService {
   private lists = [];
   private list = [];
   private db = firebase.firestore();
+  private listCollection: DocumentData;
 
   constructor() { }
 
-  getCurrentList(): string {
+  /**
+   * getCurrentListName
+   */
+  getCurrentListName(): string {
     return this.currentList;
   }
 
+  /**
+   * setCurrentList
+   * @param list: nom de la liste
+   */
   setCurrentList(list: string) {
     this.currentList = list;
   }
 
+  /**
+   * createList
+   * @param list: liste à créer
+   */
   createList(list) {
     this.db.collection('lists').add({
       name: list.list
@@ -29,6 +43,9 @@ export class ListService {
     });
   }
 
+  /**
+   * getAllLists
+   */
   getAllLists() {
     this.lists = [];
 
@@ -36,11 +53,10 @@ export class ListService {
       .then((snapshot) => {
         snapshot.forEach((doc) => {
           this.lists.push(doc.data());
-          // console.log(doc.id, '=>', doc.data().list);
         });
 
-        // Liste par défaut (1ère)
-        this.setCurrentList(snapshot.docs[0].data().name);
+        // Liste par défaut (c'est la 1ère)
+        // this.setCurrentList(snapshot.docs[0].data().name);
 
       })
       .catch((err) => {
@@ -50,27 +66,20 @@ export class ListService {
     return this.lists;
   }
 
-  getList(name) {
-    this.list = [];
-
-    this.db.collection('lists')
-      .where('name', '==', name)
-      .limit(1)
-      .get()
-      .then(snapshot => {
-        if (snapshot.empty) {
-          console.log('No matching documents: ' + name);
-          return;
-        }
-
-        this.list.push(snapshot);
-        // this.setCurrentList(snapshot.docs[0].data().name);
-
-        // Récupération des tâches liées à la liste
-        // this.taskService.getTasksByList(this.currentList);
-      });
-
-    return this.list;
-  }
-
+  // setCurrentListCollection(list: string): void {
+  //   this.db.collection('lists')
+  //     .where('name', '==', list)
+  //     .get()
+  //     .then(querySnapshot => {
+  //       if (!querySnapshot.empty) {
+  //         this.listCollection = querySnapshot.docs[0].data();
+  //         console.log(this.listCollection)
+  //         // this.setCurrentList(querySnapshot.docs[0].data().name);
+  //       }
+  //     });
+  // }
+  //
+  // getCurrentListCollection(): DocumentData {
+  //   return this.listCollection;
+  // }
 }

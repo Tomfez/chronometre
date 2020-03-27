@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {ListComponent} from './list/list.component';
-import {TaskComponent} from './task/task.component';
 import {ListsComponent} from './lists/lists.component';
 
 const routes: Routes = [
@@ -17,10 +16,6 @@ const routes: Routes = [
   {
     path: 'list/:name',
     component: ListComponent
-  },
-  {
-    path: 'tasks',
-    component: TaskComponent
   }
 ];
 

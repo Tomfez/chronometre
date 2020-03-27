@@ -54,6 +54,7 @@ export class ListsComponent implements OnInit {
     }
 
     this.createList(form);
+    this.formDirective.resetForm();
   }
 
   /**
@@ -70,25 +71,5 @@ export class ListsComponent implements OnInit {
   private getAllLists() {
     this.lists = this.listService.getAllLists();
   }
-
-
-
-  // public loadList(list) {
-  //   this.db.collection('lists')
-  //     .where('name', '==', list.name)
-  //     .limit(1)
-  //     .get()
-  //     .then(snapshot => {
-  //       if (snapshot.empty) {
-  //         console.log('No matching documents: ' + list.name);
-  //         return;
-  //       }
-  //
-  //       this.listService.setCurrentList(snapshot.docs[0].data().name);
-  //
-  //       // Récupération des tâches liées à la liste
-  //       this.taskService.getTasksByList(this.listService.getCurrentList());
-  //     });
-  // }
 
 }

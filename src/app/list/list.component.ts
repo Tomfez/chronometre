@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ListService} from '../list.service';
-import {TaskService} from '../task.service';
-import {ActivatedRoute} from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-list',
@@ -14,14 +13,12 @@ export class ListComponent implements OnInit {
 
   /**
    * Constructor
-   * @param route: ActivatedRoute
    * @param listService: ListService
-   * @param taskService: TaskService
+   * @param route: ActivatedRoute
    */
   constructor(
-    private route: ActivatedRoute,
     private listService: ListService,
-    private taskService: TaskService
+    private route: ActivatedRoute
   ) {
   }
 
@@ -29,13 +26,9 @@ export class ListComponent implements OnInit {
    * ngOnInit
    */
   ngOnInit() {
-    this.list = this.getCurrentList();
-  }
-
-  public getCurrentList() {
-    return this.listService.getCurrentList();
-    // const name = +this.route.snapshot.paramMap.get('name');
-    // this.listService.getList(name);
+    const listName = this.route.snapshot.paramMap.get('name');
+    this.listService.setCurrentList(listName);
+    this.list = this.listService.getCurrentListName();
   }
 
 }

@@ -4,7 +4,6 @@
   <!-- Affichage des listes -->
   <div cdkDropList cdkDropListOrientation="horizontal" class="col-12 lists" (cdkDropListDropped)="drop($event)">
     <div class="list" *ngFor="let list of lists" routerLink="/list/{{list.name}}">
-      <!--         (click)="loadList(list)">-->
       {{list.name}}
     </div>
   </div>

@@ -15,7 +15,6 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import { ListComponent } from './list/list.component';
 import { TaskComponent } from './task/task.component';
 import {ListService} from './list.service';
-import {TaskService} from './task.service';
 import {AppRoutingModule} from './app-routing.module';
 import { ListsComponent } from './lists/lists.component';
 
@@ -42,7 +41,7 @@ import { ListsComponent } from './lists/lists.component';
     FormsModule,
     AppRoutingModule
   ],
-  providers: [ListService, TaskService],
+  providers: [ListService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
