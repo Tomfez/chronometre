@@ -1,10 +1,11 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators} from '@angular/forms';
 import {Task} from '../task';
-import {Color} from '../color.enum';
 import {ListService} from '../list.service';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import * as firebase from 'firebase';
+import randomColor from 'randomcolor';
+
 import DocumentData = firebase.firestore.DocumentData;
 import FieldValue = firebase.firestore.FieldValue;
 
@@ -20,16 +21,9 @@ export class TaskComponent implements OnInit {
   public toDoForm: FormGroup;
   public hide = false;
   public colors: string[] = [];
-  public tasksList: DocumentData[] = [];
   private db = firebase.firestore();
-
-  done = [
-    { id: 1, task: 'Get up' },
-    { id: 2, task: 'Brush teeth' },
-    { id: 3, task: 'Take a shower' },
-    { id: 4, task: 'Check e-mail' },
-    { id: 5, task: 'Walk dog' }
-  ];
+  public tasksList: DocumentData[] = [];
+  public tasksDoneList: DocumentData = [];
 
   oList = () => this.db.collection('lists').where('name', '==', this.listService.getCurrentListName()).get();
 
@@ -53,7 +47,10 @@ export class TaskComponent implements OnInit {
     });
 
     for (let i = 0; i < 42; i++) {
-      this.colors.push(this.getRandomColor());
+      const color = randomColor(); // a hex code for an attractive color
+
+      this.colors.push(color);
+      // this.tasksList.push({name: color});
     }
 
     this.getTasks();
@@ -89,11 +86,16 @@ export class TaskComponent implements OnInit {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
-      // todo mettre a jour la tache en done
       transferArrayItem(event.previousContainer.data,
         event.container.data,
         event.previousIndex,
         event.currentIndex);
+
+      const task = event.container.data[event.currentIndex];
+
+      // Passage de la tâche en "done" ou non
+      task.done = !task.done;
+      this.updateTask(task);
     }
   }
 
@@ -101,28 +103,6 @@ export class TaskComponent implements OnInit {
   //   this.done = [];
   //   return this.done;
   // }
-
-  /**
-   * Génère une couleur aléatoire
-   */
-  private getRandomColor() {
-    const item = this.getRandomInt(0, Object.keys(Color).length);
-    const color = Object.keys(Color)[item];
-
-    return Color[color];
-  }
-
-  /**
-   * Retourne un nombre aléatoire
-   * @param min: nombre min
-   * @param max: nombre max
-   */
-  private getRandomInt(min, max): number {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-
-    return Math.floor(Math.random() * (max - min)) + min;
-  }
 
   /**
    * Permet de switch entre l'affichage et l'édition d'une tâche
@@ -168,9 +148,14 @@ export class TaskComponent implements OnInit {
     firebase.firestore().collectionGroup('tasks').where('list', '==', currentList)
       .onSnapshot(querySnapshot => {
         this.tasksList = [];
+        this.tasksDoneList = [];
 
         querySnapshot.forEach(doc => {
-          this.tasksList.push(doc.data());
+          if (doc.data().done) {
+            this.tasksDoneList.push(doc.data());
+          } else {
+            this.tasksList.push(doc.data());
+          }
         });
       });
   }
@@ -181,12 +166,11 @@ export class TaskComponent implements OnInit {
    */
   updateTask(data) {
     this.db.collectionGroup('tasks').where('timestamp', '==', data.timestamp).get().then(querySnapshot => {
-      this.toggleInput();
-
       if (!querySnapshot.empty) {
         querySnapshot.forEach(doc => {
           doc.ref.update({
             name: data.name,
+            done: data.done,
             timestamp: FieldValue.serverTimestamp()
           });
         });

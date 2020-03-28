@@ -14,11 +14,19 @@ export class ListsComponent implements OnInit {
   public listForm: FormGroup;
   public lists = [];
 
+  /**
+   * constructor
+   * @param formBuilder: FormBuilder
+   * @param listService: ListService
+   */
   constructor(
     private formBuilder: FormBuilder,
     private listService: ListService,
   ) { }
 
+  /**
+   * ngOnInit
+   */
   ngOnInit() {
     this.listForm = this.formBuilder.group({
       list: [null, Validators.required]
