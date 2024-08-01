@@ -1,0 +1,37 @@
+<h2>Tâches</h2>
+
+<!-- Liste de tâches à faire -->
+<div class="container">
+    <div class="col-md-6">
+        <h4>To do ({{tasksTodoList.length}})</h4>
+
+        <!-- class="list" *ngFor="let item of item$ | async"> -->
+        <!-- {{item.description}} -->
+        <div cdkDropList
+        #todoList="cdkDropList"
+        [cdkDropListData]="tasksTodoList"
+        [cdkDropListConnectedTo]="[doneList]"
+        class="list"
+        (cdkDropListDropped)="drop($event)">
+            @for (task of tasksTodoList; track task) {
+            <div class="box" cdkDrag>{{task.description}}</div>
+            }
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <!-- Liste de tâches terminées -->
+        <h4>Done ({{tasksDoneList.length}})</h4>
+
+        <div  cdkDropList
+        #doneList="cdkDropList"
+        [cdkDropListData]="tasksDoneList"
+        [cdkDropListConnectedTo]="[todoList]"
+        class="list"
+        (cdkDropListDropped)="drop($event)">
+                @for (task of tasksDoneList; track task) {
+                <div class="box" cdkDrag> {{task.description}}</div>
+                }
+        </div>
+    </div>
+</div>
