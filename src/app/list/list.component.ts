@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { Task } from '../task';
 import { TaskService } from '../task.service';
 import {
@@ -8,7 +8,6 @@ import {
   moveItemInArray,
   transferArrayItem
 } from '@angular/cdk/drag-drop'
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-list',
@@ -17,33 +16,50 @@ import { Observable } from 'rxjs';
   templateUrl: './list.component.html',
   styleUrl: './list.component.css'
 })
+
 export class ListComponent {
+  @Output() remove: EventEmitter<Task> = new EventEmitter<Task>();
+
   taskService: TaskService = inject(TaskService);
-  tasksTodoList: Task[];// = [];
-  tasksDoneList: Task[] = [];
-  disabled: boolean;
+  tasksTodoList: Task[];
+  tasksDoneList: Task[];
+  disabled: boolean = false;
   colors: string[] = [];
 
   constructor() {
     this.tasksTodoList = this.taskService
       .getAllTasks()
       .filter(task => !task.isDone);
-    this.disabled = false;
-
-    this.tasksTodoList.forEach(task => {
-      const color = this.taskService.getRandomColor();
-      this.colors.push(color);
-    });
+    // this.disabled = false;
+    console.log(this.tasksTodoList);
+    // this.tasksTodoList.forEach(task => {
+    //   const color = this.taskService.getRandomColor();
+    //   this.colors.push(color);
+    // });
 
     this.tasksDoneList = this.taskService
       .getAllTasks()
       .filter(task => task.isDone);
-    // for (let i = 0; i < this.tasksTodoList.length; i++) {
-    //   const color = this.taskService.getRandomColor();
-    //   this.colors.push(color);
-    // }
+    // // for (let i = 0; i < this.tasksTodoList.length; i++) {
+    // //   const color = this.taskService.getRandomColor();
+    // //   this.colors.push(color);
+    // // }
   }
 
+  addTask(task: string): void {
+    const tt: Task = {
+      id: 5,
+      description: task,
+      disabled: false,
+      isDone: false
+    };
+    this.taskService.addItem(tt);
+  }
+
+  removeTask(task: Task): void {
+    this.remove.emit(task);
+    this.taskService.deleteItem(task);
+  }
 
   /**
    * Transfère une tâche d'une liste à l'autre

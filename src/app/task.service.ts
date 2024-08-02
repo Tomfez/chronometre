@@ -1,32 +1,46 @@
 import { inject, Injectable } from '@angular/core';
 import { Task } from './task';
-import { Firestore, collection, collectionData } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { StorageService } from './services/storage.service';
+
+const todoListStorageKey = 'Todo_List';
+const defaulttasksList: Task[] = [
+  { id: 1, description: "task 1", isDone: false, disabled: false },
+  { id: 2, description: "task 2", isDone: false, disabled: false },
+  { id: 3, description: "task 3", isDone: false, disabled: false },
+  { id: 4, description: "task 4", isDone: true, disabled: true }
+];
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  // private dbPath = '/tasks';
-  // tasksList: AngularFireList<Task[]>;
-  // item$: Observable<any[]>;
-  // firestore: Firestore = inject(Firestore);
-  // constructor(private db: AngularFireDatabase) {
-  //   this.tasksList = db.list(this.dbPath);
-  // }
+  tasksList: Task[];
 
-  constructor() {
-    // const aCollection = collection(this.firestore, '');
-    // this.item$ = collectionData(aCollection);
-    // this.item$ = this.getAllTasks();
+  constructor(private storageService: StorageService) {
+    const res = this.storageService.getData(todoListStorageKey);
+    this.tasksList =  res.length != undefined ? res : defaulttasksList;
   }
 
-  tasks: Task[] = [
-    { id: 1, description: "task 1", isDone: false, disabled: false },
-    { id: 2, description: "task 2", isDone: false, disabled: false },
-    { id: 3, description: "task 3", isDone: false, disabled: false },
-    { id: 4, description: "task 4", isDone: true, disabled: true }
-  ];
+  addItem(val: Task): void {
+    this.tasksList.push(val);
+    this.saveList();
+  }
+
+  updateItem(item: Task, changes: any): void {
+    const index = this.tasksList.indexOf(item);
+    this.tasksList[index] = { ...item, ...changes };
+    this.saveList();
+  }
+
+  deleteItem(item: Task) {
+    const index = this.tasksList.indexOf(item);
+    this.tasksList.splice(index, 1);
+    this.saveList();
+  }
+
+  saveList() {
+    this.storageService.setData(todoListStorageKey, this.tasksList);
+  }
 
   // getAllTasks(): Task[] {
   //   return this.tasks;
@@ -34,7 +48,7 @@ export class TaskService {
 
   getAllTasks() {
     // return this.item$;
-    return this.tasks;
+    return this.tasksList;
   }
 
 
