@@ -1,9 +1,6 @@
-export class Task {
-  task: string;
-  done: boolean = false;
-  list: string;
-
-  constructor(values: Object = {}) {
-    Object.assign(this, values);
-  }
+export interface Task {
+    id: number,
+    description: string,
+    isDone: boolean,
+    disabled: boolean
 }

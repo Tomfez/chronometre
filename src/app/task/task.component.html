@@ -1,75 +1,14 @@
-<!-- Ajout d'une tâche -->
-<div class="form-todo">
-  <form [formGroup]="toDoForm" (ngSubmit)="onSubmit(toDoForm.value)" class="todo-form">
-    <mat-form-field class="task-field">
-      <mat-label>Tâche</mat-label>
-      <input matInput id="task" formControlName="task" type="text" placeholder="Ex: pizza" required>
-      <mat-error *ngIf="task.errors?.required">Ce champ est requis</mat-error>
-    </mat-form-field>
-
-    <button mat-stroked-button color="primary" type="submit">Ajouter la tâche</button>
-  </form>
-</div>
-
-<br><br>
-<h2>Tâches</h2>
-
-<!-- Liste de tâches à faire -->
-<div class="row">
-  <div class="col-md-6">
-    <h4>To do ({{tasksList.length}})</h4>
-
-    <div
-      class="list"
-      cdkDropList
-      #todoList="cdkDropList"
-      [cdkDropListData]="tasksList"
-      [cdkDropListConnectedTo]="[doneList]"
-      (cdkDropListDropped)="drop($event)">
-
-      <!--    <mat-nav-list>-->
-      <mat-list-item class="box" cdkDrag
-                     *ngFor="let item of tasksList; let i = index"
-                     [cdkDragDisabled]="hide"
-                     [style.background-color]="colors[i]">
-
-        <div class="task-field-edit" *ngIf="!hide && !item.done; else inputItem">
-          <span (click)="toggleInput()">{{ item.name }}</span>
-
-          <button mat-icon-button matTooltip="Supprimer la tâche" (click)="deleteTask(item.name)">
-            <mat-icon matListIcon>delete_outline</mat-icon>
-          </button>
+<mat-toolbar color="primary">
+    ...
+    </mat-toolbar>
+    
+    <div class="content-wrapper">
+      <button (click)="newTask()" mat-button>
+        <mat-icon>add</mat-icon> Add Task
+      </button>
+    
+      <div class="container-wrapper">
+        <div class="container">
+          ...
         </div>
-
-        <!-- Modification d'une tâche -->
-        <ng-template #inputItem>
-          <mat-form-field class="example-full-width">
-            <mat-label>Tâche</mat-label>
-            <input matInput [value]="item.name" [(ngModel)]="item.name" required>
-            <!--              <mat-error *ngIf="task.errors?.required">Ce champ est requis</mat-error>-->
-          </mat-form-field>
-
-          <button mat-icon-button matTooltip="Valider" type="submit" (click)="updateTask(item); toggleInput();">
-            <mat-icon matListIcon>check</mat-icon>
-          </button>
-        </ng-template>
-      </mat-list-item>
-      <!--    </mat-nav-list>-->
     </div>
-  </div>
-
-  <div class="col-md-6">
-    <!-- Liste de tâches terminées -->
-    <h4>Done ({{tasksDoneList.length}})</h4>
-
-    <div
-      class="list"
-      cdkDropList
-      #doneList="cdkDropList"
-      [cdkDropListData]="tasksDoneList"
-      [cdkDropListConnectedTo]="[todoList]"
-      (cdkDropListDropped)="drop($event)">
-      <div class="box" *ngFor="let item of tasksDoneList" cdkDrag>{{item.name}}</div>
-    </div>
-  </div>
-</div>
