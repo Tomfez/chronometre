@@ -12,7 +12,6 @@ updates:
       day: "monday"
       time: "09:00"
       timezone: "Europe/Paris"
-    open-pull-requests-limit: 5
     groups:
       angular-dependencies:
         patterns:
